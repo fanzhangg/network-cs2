@@ -175,20 +175,21 @@ def vertex_copy_model(c, gamma, num_steps):
 
     G = get_seed_multidigraph(c)
     
-    curr_node = c
+    prev_node = c
 
     for _ in range(num_steps):  # Add num_steps nodes
-        new_node = curr_node + 1
-        for i in range(c):  # Create c links
-            x = random.randint(0, curr_node)   # Pick an existing node x
-            for i in G.out_edges():
-                probability = random.random()  
-                if probability < gamma:
-                    curr_node += 1
-                    G.add_node(curr_node)
-                    G.add_edge(x, curr_node)
-                else:
-                    curr_node += 1
+        new_node = prev_node + 1
+        G.add_node(new_node)    # Add the new node
+        x = random.randint(0, prev_node)   # Pick an existing node x
+        for n in G.out_edges(x):    # Loop through c out-edges
+            probability = random.random()
+            out_n = n[1] 
+            if probability < gamma: # Copy the citation
+                G.add_edge(new_node, out_n)
+            else:   # Cite paper at random
+                rand_n = random.randint(0, prev_node)
+                G.add_edge(new_node, rand_n)
+        prev_node += 1
 
     ############
     #
@@ -244,11 +245,10 @@ def lnfa_model(c, sigma, num_steps):
 
 #### replace this code with your own code to test your models
 
-#test_vertex_copy()
+test_vertex_copy()
 
 #test_lfna()
 
-get_seed_multidigraph(10)
 #### once your code is working, use these two methods to generate the 6 networks
 #### that will be part of your written report
 #run_vertex_copy('/output_dir_name')
